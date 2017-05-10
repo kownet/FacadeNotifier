@@ -11,7 +11,7 @@
             new Notifier(channels)
                 .WithTitle("Message title")
                 .WithBody("Message body")
-                .ToPeople(new string[] { "test-user-1", "test-user-3" })
+                //.ToPeople(new string[] { "test-user-1", "test-user-3" })
                 .ToGroups(new string[] { "test-group-1" })
                 .Send();
         }

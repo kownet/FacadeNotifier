@@ -12,6 +12,7 @@
 
             builder.RegisterType<Application>().As<IApplication>();
 
+            builder.RegisterModule(new ClientsModule());
             builder.RegisterModule(new ChannelsModule());
 
             return builder.Build();
