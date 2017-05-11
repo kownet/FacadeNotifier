@@ -1,7 +1,7 @@
 ﻿namespace FacadeNotifier.Core
 {
     using Channels;
-    using Messages;
+    using Content;
     using NLog;
     using System;
     using System.Collections.Generic;
@@ -12,12 +12,14 @@
 
         private readonly IEnumerable<IChannel> _channels;
         private readonly IMessage _message;
+        private readonly IRecipient _recipient;
 
         public Notifier(IEnumerable<IChannel> channels)
         {
             _channels = channels;
 
             _message = new Message();
+            _recipient = new Recipient();
         }
 
         public void Send()
@@ -26,24 +28,24 @@
                 throw new ArgumentException("Message must have a title and body defined.");
 
             foreach (var channel in _channels)
-                channel.Send(_message);
+            {
+                var result = channel.SendAsync(_message, _recipient).Result;
 
-            var log = $"Following message: 'Title - {_message.Title} Body - {_message.Body}' has been sent.";
-            _logger.Info(log);
+                if(result.Succeed)
+                    _logger.Info($"Following message: 'Title - {_message.Title} Body - {_message.Body}' has been sent.");
+            }
         }
 
         public INotifier ToPeople(params string[] toPeople)
         {
-            foreach (var channel in _channels)
-                channel.SetRecipientsById(toPeople);
+            _recipient.Users = toPeople;
 
             return this;
         }
 
         public INotifier ToGroups(params string[] toGroups)
         {
-            foreach (var channel in _channels)
-                channel.SetRecipientsById(toGroups);
+            _recipient.Groups = toGroups;
 
             return this;
         }
@@ -58,6 +60,13 @@
         public INotifier WithBody(string body)
         {
             _message.Body = body;
+
+            return this;
+        }
+
+        public INotifier SetMessageType(MessageType messageType)
+        {
+            _message.MessageType = messageType;
 
             return this;
         }

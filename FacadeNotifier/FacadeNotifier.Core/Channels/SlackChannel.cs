@@ -1,8 +1,10 @@
 ﻿namespace FacadeNotifier.Core.Channels
 {
     using Clients;
-    using Messages;
+    using Content;
+    using Extensions;
     using NLog;
+    using Responses;
     using System.Threading.Tasks;
 
     public class SlackChannel : BaseChannel, IChannel
@@ -17,30 +19,19 @@
 
         public string Name => "Slack";
 
-        public void Send(IMessage message)
+        public async Task<SendResponse> SendAsync(IMessage message, IRecipient recipient)
         {
-            LogMessage = $"Sending '{message.Title}' via {Name}.";
-            _logger.Info(LogMessage);
+            if(recipient.Groups.AnyOrNotNull())
+                foreach (var group in recipient.Groups)
+                    _logger.Info($"Group message to {group} will be send via {Name}.");
 
-            Task.Run(async () => { await _slack.SendMessageAsync(message.Body); });
-        }
+            if (recipient.Users.AnyOrNotNull())
+                foreach (var user in recipient.Users)
+                    _logger.Info($"Direct message to {user} will be send via {Name}.");
 
-        public void SetRecipientsByGroup(params string[] toGroups)
-        {
-            foreach (var group in toGroups)
-            {
-                LogMessage = $"Group message to {group} will be send via {Name}.";
-                _logger.Info(LogMessage);
-            }
-        }
+            var response = await _slack.SendMessageAsync(message, recipient);
 
-        public void SetRecipientsById(params string[] toPeople)
-        {
-            foreach (var person in toPeople)
-            {
-                LogMessage = $"Private message to {person} will be send via {Name}.";
-                _logger.Info(LogMessage);
-            }
+            return new SendResponse { Succeed = response.IsSuccessStatusCode, Message = response.ReasonPhrase };
         }
     }
 }

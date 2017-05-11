@@ -1,12 +1,13 @@
 ﻿namespace FacadeNotifier.Core.Channels
 {
-    using Messages;
+    using Content;
+    using Responses;
+    using System.Threading.Tasks;
 
     public interface IChannel
     {
-        void SetRecipientsById(params string[] toPeople);
-        void SetRecipientsByGroup(params string[] toGroups);
-        void Send(IMessage message);
+        Task<SendResponse> SendAsync(IMessage message, IRecipient recipient);
+
         string Name { get; }
     }
 }

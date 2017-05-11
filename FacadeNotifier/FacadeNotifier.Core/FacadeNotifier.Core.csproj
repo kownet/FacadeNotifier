@@ -57,11 +57,21 @@
     <Compile Include="Clients\IHipChatClient.cs" />
     <Compile Include="Clients\ISlackClient.cs" />
     <Compile Include="Clients\SlackClient.cs" />
+    <Compile Include="Content\IRecipient.cs" />
+    <Compile Include="Content\MessageType.cs" />
+    <Compile Include="Content\Recipient.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Payloads\HipChat\HipChatPayload.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="INotifier.cs" />
-    <Compile Include="Messages\IMessage.cs" />
-    <Compile Include="Messages\Message.cs" />
+    <Compile Include="Content\IMessage.cs" />
+    <Compile Include="Content\Message.cs" />
     <Compile Include="Notifier.cs" />
+    <Compile Include="Payloads\Slack\Attachment.cs" />
+    <Compile Include="Payloads\Slack\Field.cs" />
+    <Compile Include="Payloads\Slack\SlackPayload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Responses\SendResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

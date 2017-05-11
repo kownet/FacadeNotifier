@@ -1,7 +1,11 @@
 ﻿namespace FacadeNotifier.Core.Clients
 {
+    using Content;
+    using Extensions;
     using Newtonsoft.Json;
+    using Payloads.HipChat;
     using System;
+    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
@@ -21,30 +25,48 @@
             _messageToken = messageToken;
         }
 
-        public async Task<HttpResponseMessage> SendMessageAsync(string message, string channel = null, string username = null)
+        public async Task<HttpResponseMessage> SendMessageAsync(IMessage message, IRecipient recipient)
         {
             _httpClient.BaseAddress = _webhookUrl;
 
-            var payload = new
+            var payload = new HipChatPayload
             {
-                color = "green",
-                message = message,
-                notify = true,
-                message_format = "text"
+                Color = "green",
+                Message = message.Body,
+                Notify = true,
+                MessageFormat = "text"
             };
             var serializedPayload = JsonConvert.SerializeObject(payload);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "user/tomek@kownet.info/message");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _messageToken);
-            request.Content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
-            var response1 = await _httpClient.SendAsync(request);
+            var responseGroup = await SendToHipChat(recipient.Groups, serializedPayload, _roomToken, "room", "notification");
 
-            var request1 = new HttpRequestMessage(HttpMethod.Post, "room/Api/notification");
-            request1.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _roomToken);
-            request1.Content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
-            var response2 = await _httpClient.SendAsync(request1);
+            var responseUser = await SendToHipChat(recipient.Users, serializedPayload, _messageToken, "user", "message");
 
-            return response1;
+            return responseGroup.IsSuccessStatusCode && responseUser.IsSuccessStatusCode
+                ? new HttpResponseMessage(HttpStatusCode.OK)
+                : new HttpResponseMessage()
+                {
+                    StatusCode = responseGroup.IsSuccessStatusCode ? responseUser.StatusCode : responseGroup.StatusCode
+                };
+        }
+
+        private async Task<HttpResponseMessage> SendToHipChat(string[] recipients, string serializedPayload, string token, string container, string alert)
+        {
+            HttpResponseMessage response = null;
+
+            if (recipients.AnyOrNotNull())
+            {
+                foreach (var group in recipients)
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Post, $"{container}/{group}/{alert}");
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    request.Content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
+
+                    response = await _httpClient.SendAsync(request);
+                }
+            }
+
+            return response;
         }
     }
 }
