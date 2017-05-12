@@ -9,6 +9,7 @@
         INotifier ToPeople(params string[] toPeople);
         INotifier ToGroups(params string[] toGroups);
         INotifier SetMessageType(MessageType messageType);
+        INotifier WithLink(ContentLink link);
         void Send();
     }
 }

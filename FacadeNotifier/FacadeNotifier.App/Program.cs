@@ -24,6 +24,8 @@
 
                 var channels = channelTypes.Select(t => scope.Resolve(t) as IChannel);
 
+                channels = channels.Where(ch => ch.Name == "Slack");
+
                 try
                 {
                     app.Run(channels);

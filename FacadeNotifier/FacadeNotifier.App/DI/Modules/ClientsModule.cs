@@ -13,7 +13,7 @@
                 .As<ISlackClient>();
 
             builder.Register(c => new HipChatClient(
-                new Uri(""),
+                new Uri("https://api.hipchat.com/v2/"),
                 roomToken: "",
                 messageToken: ""))
                 .As<IHipChatClient>();

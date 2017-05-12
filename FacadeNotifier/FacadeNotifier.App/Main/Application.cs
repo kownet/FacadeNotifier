@@ -10,11 +10,12 @@
         public void Run(IEnumerable<IChannel> channels)
         {
             new Notifier(channels)
-                .WithTitle("Message title")
-                .WithBody("Message body")
-                .ToPeople(new string[] { "tomek@kownet.info", "tk" })
-                .ToGroups(new string[] { "Api", "Test_api" })
-                .SetMessageType(MessageType.Failed)
+                .WithTitle("Project Name")
+                .WithBody("Build")
+                .ToPeople(new string[] { "tk" })
+                .ToGroups(new string[] { "Api" })
+                .SetMessageType(MessageType.Success)
+                .WithLink(new ContentLink { Url = "https://kownet.info", Caption = "Kownet" })
                 .Send();
         }
     }

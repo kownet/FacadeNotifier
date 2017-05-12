@@ -15,5 +15,8 @@
 
         [JsonProperty("message_format")]
         public string MessageFormat { get; set; }
+
+        [JsonProperty("card")]
+        public Card Card { get; set; }
     }
 }

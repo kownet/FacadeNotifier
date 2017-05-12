@@ -1,4 +1,7 @@
-﻿namespace FacadeNotifier.Core.Clients
+﻿/// <summary>
+/// API Reference here: https://api.slack.com/docs/messages
+/// </summary>
+namespace FacadeNotifier.Core.Clients
 {
     using Content;
     using Extensions;
@@ -10,6 +13,7 @@
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
+    using Utils;
 
     public class SlackClient : ISlackClient
     {
@@ -25,19 +29,20 @@
         {
             var payload = new SlackPayload
             {
+                WithMarkdown = true,
                 Attachments = new List<Attachment>
                 {
                     new Attachment
                     {
-                        Fallback = $"Result [{message.MessageType}]: <http://url_to_task|Link to resource>",
-                        Pretext = $"Result [{message.MessageType}]: <http://url_to_task|Link to resource>",
-                        Color = $"{message.MessageType.ToColor()}",
+                        Fallback = PayloadContent.SlackPayloadHeader(message),
+                        Pretext = PayloadContent.SlackPayloadHeader(message),
+                        Color = $"{message.MessageType.ToSlackColor()}",
                         Fields = new List<Field>
                         {
                             new Field
                             {
                                 Title = $"{message.Title}",
-                                Value = $"{message.Body}",
+                                Value = PayloadContent.SlackPayloadContent(message),
                                 Short = false
                             }
                         }

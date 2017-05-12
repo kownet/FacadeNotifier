@@ -13,5 +13,8 @@
 
         [JsonProperty("attachments")]
         public List<Attachment> Attachments { get; set; }
+
+        [JsonProperty("mrkdwn")]
+        public bool WithMarkdown { get; set; }
     }
 }

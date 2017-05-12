@@ -5,5 +5,6 @@
         string Title { get; set; }
         string Body { get; set; }
         MessageType MessageType { get; set; }
+        ContentLink Link { get; set; }
     }
 }

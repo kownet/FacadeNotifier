@@ -70,5 +70,12 @@
 
             return this;
         }
+
+        public INotifier WithLink(ContentLink link)
+        {
+            _message.Link = link;
+
+            return this;
+        }
     }
 }

@@ -4,7 +4,7 @@
 
     public static class EnumExtensions
     {
-        public static string ToColor(this MessageType messageType)
+        public static string ToSlackColor(this MessageType messageType)
         {
             switch (messageType)
             {
@@ -15,7 +15,22 @@
                 case MessageType.Cancelled:
                     return "#0000d0";
                 default:
-                    return "#00000c";
+                    return "#0000d0";
+            }
+        }
+
+        public static string ToHipChatColor(this MessageType messageType)
+        {
+            switch (messageType)
+            {
+                case MessageType.Success:
+                    return "green";
+                case MessageType.Failed:
+                    return "red";
+                case MessageType.Cancelled:
+                    return "gray";
+                default:
+                    return "gray";
             }
         }
     }

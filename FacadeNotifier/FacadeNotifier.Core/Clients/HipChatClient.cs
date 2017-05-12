@@ -31,11 +31,12 @@
 
             var payload = new HipChatPayload
             {
-                Color = "green",
-                Message = message.Body,
+                Color = message.MessageType.ToHipChatColor(),
+                Message = $"<b>{message.Body}</b>",
                 Notify = true,
-                MessageFormat = "text"
+                MessageFormat = "html"
             };
+
             var serializedPayload = JsonConvert.SerializeObject(payload);
 
             var responseGroup = await SendToHipChat(recipient.Groups, serializedPayload, _roomToken, "room", "notification");
