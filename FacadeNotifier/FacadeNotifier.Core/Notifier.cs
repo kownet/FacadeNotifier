@@ -28,12 +28,7 @@
                 throw new ArgumentException("Message must have a title and body defined.");
 
             foreach (var channel in _channels)
-            {
-                var result = channel.SendAsync(_message, _recipient).Result;
-
-                if(result.Succeed)
-                    _logger.Info($"Following message: 'Title - {_message.Title} Body - {_message.Body}' has been sent.");
-            }
+                channel.SendAsync(_message, _recipient);
         }
 
         public INotifier ToPeople(params string[] toPeople)

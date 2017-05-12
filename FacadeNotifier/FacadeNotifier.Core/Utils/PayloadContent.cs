@@ -1,6 +1,7 @@
 ﻿namespace FacadeNotifier.Core.Utils
 {
     using Content;
+    using Extensions;
 
     public static class PayloadContent
     {
@@ -37,7 +38,44 @@
             }
             else
                 return message.Body;
-            
+
+        }
+
+        public static string HipChatPayloadContent(IMessage message)
+        {
+            string header = string.Empty;
+            string body = string.Empty;
+
+            if (message.Link != null)
+            {
+                switch (message.MessageType)
+                {
+                    case MessageType.Success:
+                        {
+                            header = $"{message.Body} succeed: {message.Title}";
+                            body = $"Distribution: <a href='{message.Link.Url}'>{message.Link.Caption}</a>";
+                        }; break;
+                    case MessageType.Failed:
+                        {
+                            header = $"{message.Body} failed: {message.Title}";
+                            body = $"Log: <a href='{message.Link.Url}'>{message.Link.Caption}</a>";
+                        }; break;
+                    case MessageType.Cancelled:
+                        {
+                            header = $"{message.Body} cancelled: {message.Title}";
+                            body = $"Cancelled by: <a href='{message.Link.Url}'>{message.Link.Caption}</a>";
+                        }; break;
+                    default:
+                        body = ""; break;
+                }
+
+                return $"<table>" +
+                            $"<tr><td><span style='color: {message.MessageType.ToHipChatColor()}'><strong>{header}</strong></span></td></tr>" +
+                            $"<tr><td>{body}</td></tr>" +
+                       "</table>";
+            }
+            else
+                return message.Body;
         }
     }
 }

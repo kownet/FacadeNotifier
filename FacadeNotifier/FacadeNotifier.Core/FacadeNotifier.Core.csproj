@@ -75,7 +75,6 @@
     <Compile Include="Payloads\Slack\Field.cs" />
     <Compile Include="Payloads\Slack\SlackPayload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Responses\SendResponse.cs" />
     <Compile Include="Utils\PayloadContent.cs" />
   </ItemGroup>
   <ItemGroup>

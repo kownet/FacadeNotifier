@@ -4,7 +4,6 @@
     using Content;
     using Extensions;
     using NLog;
-    using Responses;
     using System.Threading.Tasks;
 
     public class SlackChannel : BaseChannel, IChannel
@@ -19,7 +18,7 @@
 
         public string Name => "Slack";
 
-        public async Task<SendResponse> SendAsync(IMessage message, IRecipient recipient)
+        public async Task SendAsync(IMessage message, IRecipient recipient)
         {
             if(recipient.Groups.AnyOrNotNull())
                 foreach (var group in recipient.Groups)
@@ -29,9 +28,7 @@
                 foreach (var user in recipient.Users)
                     _logger.Info($"Direct message to {user} will be send via {Name}.");
 
-            var response = await _slack.SendMessageAsync(message, recipient);
-
-            return new SendResponse { Succeed = response.IsSuccessStatusCode, Message = response.ReasonPhrase };
+            await _slack.SendMessageAsync(message, recipient);
         }
     }
 }

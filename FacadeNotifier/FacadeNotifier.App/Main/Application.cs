@@ -12,7 +12,7 @@
             new Notifier(channels)
                 .WithTitle("Project Name")
                 .WithBody("Build")
-                .ToPeople(new string[] { "tk" })
+                .ToPeople(new string[] { "tomek@kownet.info", "tk" })
                 .ToGroups(new string[] { "Api" })
                 .SetMessageType(MessageType.Success)
                 .WithLink(new ContentLink { Url = "https://kownet.info", Caption = "Kownet" })

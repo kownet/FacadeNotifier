@@ -1,18 +1,24 @@
-﻿namespace FacadeNotifier.Core.Clients
+﻿/// <summary>
+/// API Reference here: https://developer.atlassian.com/hipchat/guide/sending-messages
+/// </summary>
+namespace FacadeNotifier.Core.Clients
 {
     using Content;
     using Extensions;
     using Newtonsoft.Json;
+    using NLog;
     using Payloads.HipChat;
     using System;
-    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
+    using Utils;
 
     public class HipChatClient : IHipChatClient
     {
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly Uri _webhookUrl;
         private readonly string _roomToken;
         private readonly string _messageToken;
@@ -25,49 +31,41 @@
             _messageToken = messageToken;
         }
 
-        public async Task<HttpResponseMessage> SendMessageAsync(IMessage message, IRecipient recipient)
+        public async Task SendMessageAsync(IMessage message, IRecipient recipient)
         {
             _httpClient.BaseAddress = _webhookUrl;
 
             var payload = new HipChatPayload
             {
                 Color = message.MessageType.ToHipChatColor(),
-                Message = $"<b>{message.Body}</b>",
+                Message = PayloadContent.HipChatPayloadContent(message),
                 Notify = true,
                 MessageFormat = "html"
             };
 
             var serializedPayload = JsonConvert.SerializeObject(payload);
 
-            var responseGroup = await SendToHipChat(recipient.Groups, serializedPayload, _roomToken, "room", "notification");
+            if (recipient.Groups.AnyOrNotNull())
+                await SendToHipChat(recipient.Groups, serializedPayload, _roomToken, "room", "notification");
 
-            var responseUser = await SendToHipChat(recipient.Users, serializedPayload, _messageToken, "user", "message");
-
-            return responseGroup.IsSuccessStatusCode && responseUser.IsSuccessStatusCode
-                ? new HttpResponseMessage(HttpStatusCode.OK)
-                : new HttpResponseMessage()
-                {
-                    StatusCode = responseGroup.IsSuccessStatusCode ? responseUser.StatusCode : responseGroup.StatusCode
-                };
+            if (recipient.Users.AnyOrNotNull())
+                await SendToHipChat(recipient.Users, serializedPayload, _messageToken, "user", "message");
         }
 
-        private async Task<HttpResponseMessage> SendToHipChat(string[] recipients, string serializedPayload, string token, string container, string alert)
+        private async Task SendToHipChat(string[] recipients, string serializedPayload, string token, string container, string alert)
         {
-            HttpResponseMessage response = null;
-
-            if (recipients.AnyOrNotNull())
+            foreach (var recipient in recipients)
             {
-                foreach (var group in recipients)
-                {
-                    var request = new HttpRequestMessage(HttpMethod.Post, $"{container}/{group}/{alert}");
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    request.Content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{container}/{recipient}/{alert}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                request.Content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
 
-                    response = await _httpClient.SendAsync(request);
-                }
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                    _logger.Info($"HIPCHAT | Message to {recipient} has been sent.");
+                else _logger.Info($"HIPCHAT | There were some errors while sending message to {recipient}.");
             }
-
-            return response;
         }
     }
 }
