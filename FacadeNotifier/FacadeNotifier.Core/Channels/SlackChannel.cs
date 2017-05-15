@@ -6,7 +6,7 @@
     using NLog;
     using System.Threading.Tasks;
 
-    public class SlackChannel : BaseChannel, IChannel
+    public class SlackChannel : IChannel
     {
         private static Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly ISlackClient _slack;

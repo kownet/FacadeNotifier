@@ -6,7 +6,7 @@
     using NLog;
     using System.Threading.Tasks;
 
-    public class HipChatChannel : BaseChannel, IChannel
+    public class HipChatChannel : IChannel
     {
         private static Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IHipChatClient _hipchat;

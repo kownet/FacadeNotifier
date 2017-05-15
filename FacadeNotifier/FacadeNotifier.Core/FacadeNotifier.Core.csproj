@@ -48,7 +48,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Channels\BaseChannel.cs" />
     <Compile Include="Channels\HipChatChannel.cs" />
     <Compile Include="Channels\IChannel.cs" />
     <Compile Include="Channels\SlackChannel.cs" />
