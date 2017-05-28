@@ -48,9 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Channels\HipChatChannel.cs" />
-    <Compile Include="Channels\IChannel.cs" />
-    <Compile Include="Channels\SlackChannel.cs" />
+    <Compile Include="APIs\HipChat\DTOs\HipChatRoomItem.cs" />
+    <Compile Include="APIs\HipChat\DTOs\HipChatRoomItemLink.cs" />
+    <Compile Include="APIs\HipChat\DTOs\HipChatRoomLink.cs" />
+    <Compile Include="APIs\HipChat\DTOs\HipChatRoomResponse.cs" />
+    <Compile Include="APIs\HipChat\HipChatApi.cs" />
     <Compile Include="Clients\HipChatClient.cs" />
     <Compile Include="Clients\IClient.cs" />
     <Compile Include="Clients\IHipChatClient.cs" />

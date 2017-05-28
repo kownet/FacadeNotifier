@@ -1,22 +1,35 @@
 ﻿namespace FacadeNotifier.App.Main
 {
     using Core;
-    using Core.Channels;
+    using Core.APIs.HipChat;
     using Core.Content;
+    using FacadeNotifier.Core.Clients;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class Application : IApplication
     {
-        public void Run(IEnumerable<IChannel> channels)
+        public void Run(IEnumerable<IClient> clients)
         {
-            new Notifier(channels)
-                .WithTitle("Project Name")
-                .WithBody("Build")
-                .ToPeople(new string[] { "tomek@kownet.info", "tk" })
-                .ToGroups(new string[] { "Api" })
-                .SetMessageType(MessageType.Success)
-                .WithLink(new ContentLink { Url = "https://kownet.info", Caption = "Kownet" })
-                .Send();
+            var message = "Test message from Notifier.";
+
+            var peopleToNotify = new List<string>()
+            {
+                "tomek@kownet.info",
+                "tk"
+            };
+
+            var rooms = new HipChatApi().GetRooms().Result;
+
+            var roomsToNotify = rooms.Select(r => r.Name);
+
+            new Notifier(clients)
+                        .WithTitle(message)
+                        .WithBody("Build")
+                        .ToPeople(peopleToNotify.ToArray())
+                        .ToGroups(roomsToNotify.ToArray())
+                        .SetMessageType(MessageType.Success)
+                        .Send();
         }
     }
 }

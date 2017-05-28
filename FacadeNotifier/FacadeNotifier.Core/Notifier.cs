@@ -1,7 +1,7 @@
 ﻿namespace FacadeNotifier.Core
 {
-    using Channels;
     using Content;
+    using FacadeNotifier.Core.Clients;
     using NLog;
     using System;
     using System.Collections.Generic;
@@ -10,13 +10,13 @@
     {
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IEnumerable<IChannel> _channels;
+        private readonly IEnumerable<IClient> _clients;
         private readonly IMessage _message;
         private readonly IRecipient _recipient;
 
-        public Notifier(IEnumerable<IChannel> channels)
+        public Notifier(IEnumerable<IClient> clients)
         {
-            _channels = channels;
+            _clients = clients;
 
             _message = new Message();
             _recipient = new Recipient();
@@ -27,8 +27,8 @@
             if (string.IsNullOrWhiteSpace(_message.Title) || string.IsNullOrWhiteSpace(_message.Body))
                 throw new ArgumentException("Message must have a title and body defined.");
 
-            foreach (var channel in _channels)
-                channel.SendAsync(_message, _recipient);
+            foreach (var client in _clients)
+                client.SendNotificationAsync(_message, _recipient);
         }
 
         public INotifier ToPeople(params string[] toPeople)

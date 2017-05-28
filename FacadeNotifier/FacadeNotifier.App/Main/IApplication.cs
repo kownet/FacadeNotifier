@@ -1,10 +1,10 @@
 ﻿namespace FacadeNotifier.App.Main
 {
-    using Core.Channels;
+    using FacadeNotifier.Core.Clients;
     using System.Collections.Generic;
 
     public interface IApplication
     {
-        void Run(IEnumerable<IChannel> channels);
+        void Run(IEnumerable<IClient> clients);
     }
 }

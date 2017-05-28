@@ -20,14 +20,13 @@ namespace FacadeNotifier.Core.Clients
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly Uri _webhookUrl;
-        private readonly HttpClient _httpClient = new HttpClient();
 
         public SlackClient(Uri webhookUrl)
         {
             _webhookUrl = webhookUrl;
         }
 
-        public async Task SendMessageAsync(IMessage message, IRecipient recipient)
+        public async Task SendNotificationAsync(IMessage message, IRecipient recipient)
         {
             var payload = new SlackPayload
             {
@@ -66,12 +65,16 @@ namespace FacadeNotifier.Core.Clients
                 payload.Channel = $"{format}{recipient}";
 
                 var serializedPayload = JsonConvert.SerializeObject(payload);
-                var response = await _httpClient.PostAsync(_webhookUrl,
-                    new StringContent(serializedPayload, Encoding.UTF8, "application/json"));
 
-                if (response.IsSuccessStatusCode)
-                    _logger.Info($"SLACK | Message to {recipient} has been sent.");
-                else _logger.Info($"SLACK | There were some errors while sending message to {recipient}.");
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.PostAsync(_webhookUrl,
+                        new StringContent(serializedPayload, Encoding.UTF8, "application/json"));
+
+                    if (response.IsSuccessStatusCode)
+                        _logger.Info($"SLACK | Message to {recipient} has been sent.");
+                    else _logger.Info($"SLACK | There were some errors while sending message to {recipient}.");
+                }
             }
         }
     }

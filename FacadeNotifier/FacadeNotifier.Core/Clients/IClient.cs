@@ -5,6 +5,6 @@
 
     public interface IClient
     {
-        Task SendMessageAsync(IMessage message, IRecipient recipient);
+        Task SendNotificationAsync(IMessage message, IRecipient recipient);
     }
 }

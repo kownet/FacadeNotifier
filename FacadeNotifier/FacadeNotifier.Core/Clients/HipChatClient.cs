@@ -22,7 +22,6 @@ namespace FacadeNotifier.Core.Clients
         private readonly Uri _webhookUrl;
         private readonly string _roomToken;
         private readonly string _messageToken;
-        private readonly HttpClient _httpClient = new HttpClient();
 
         public HipChatClient(Uri webhookUrl, string roomToken, string messageToken)
         {
@@ -31,10 +30,8 @@ namespace FacadeNotifier.Core.Clients
             _messageToken = messageToken;
         }
 
-        public async Task SendMessageAsync(IMessage message, IRecipient recipient)
+        public async Task SendNotificationAsync(IMessage message, IRecipient recipient)
         {
-            _httpClient.BaseAddress = _webhookUrl;
-
             var payload = new HipChatPayload
             {
                 Color = message.MessageType.ToHipChatColor(),
@@ -56,15 +53,20 @@ namespace FacadeNotifier.Core.Clients
         {
             foreach (var recipient in recipients)
             {
-                var request = new HttpRequestMessage(HttpMethod.Post, $"{container}/{recipient}/{alert}");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                request.Content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
+                using (var request = new HttpRequestMessage(HttpMethod.Post, $"{container}/{recipient}/{alert}"))
+                {
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    request.Content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.SendAsync(request);
+                    using (var httpClient = new HttpClient() { BaseAddress = _webhookUrl })
+                    {
+                        var response = await httpClient.SendAsync(request);
 
-                if (response.IsSuccessStatusCode)
-                    _logger.Info($"HIPCHAT | Message to {recipient} has been sent.");
-                else _logger.Info($"HIPCHAT | There were some errors while sending message to {recipient}.");
+                        if (response.IsSuccessStatusCode)
+                            _logger.Info($"HIPCHAT | Message to {recipient} has been sent.");
+                        else _logger.Info($"HIPCHAT | There were some errors while sending message to {recipient}.");
+                    }
+                }
             }
         }
     }
