@@ -6,6 +6,7 @@
     using FacadeNotifier.Core.Clients;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class Application : IApplication
     {
@@ -23,13 +24,15 @@
 
             var roomsToNotify = rooms.Select(r => r.Name);
 
-            new Notifier(clients)
-                        .WithTitle(message)
-                        .WithBody("Build")
-                        .ToPeople(peopleToNotify.ToArray())
-                        .ToGroups(roomsToNotify.ToArray())
-                        .SetMessageType(MessageType.Success)
-                        .Send();
+            Task.WaitAll(
+                new Notifier(clients)
+                            .WithTitle(message)
+                            .WithBody("Build")
+                            .ToPeople(peopleToNotify.ToArray())
+                            .ToGroups(roomsToNotify.ToArray())
+                            .SetMessageType(MessageType.Success)
+                            .WithLink(new ContentLink { Url = "https://kownet.info", Caption = "Kownet" })
+                            .SendAsync());
         }
     }
 }

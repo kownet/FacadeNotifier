@@ -26,9 +26,43 @@ namespace FacadeNotifier.Core.Clients
             _webhookUrl = webhookUrl;
         }
 
+        public void SendNotification(IMessage message, IRecipient recipient)
+        {
+            throw new NotImplementedException("Use SendNotificationAsync method for sending notifications.");
+        }
+
         public async Task SendNotificationAsync(IMessage message, IRecipient recipient)
         {
-            var payload = new SlackPayload
+            if (recipient.Groups.AnyOrNotNull())
+                await SendToSlackAsync(recipient.Groups, Payload(message), "#");
+
+            if (recipient.Users.AnyOrNotNull())
+                await SendToSlackAsync(recipient.Users, Payload(message), "@");
+        }
+
+        private async Task SendToSlackAsync(string[] recipients, SlackPayload payload, string format)
+        {
+            foreach (var recipient in recipients)
+            {
+                payload.Channel = $"{format}{recipient}";
+
+                var serializedPayload = JsonConvert.SerializeObject(payload);
+
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.PostAsync(_webhookUrl,
+                        new StringContent(serializedPayload, Encoding.UTF8, "application/json"));
+
+                    if (response.IsSuccessStatusCode)
+                        _logger.Info($"SLACK | Message to {recipient} has been sent.");
+                    else _logger.Info($"SLACK | There were some errors while sending message to {recipient}.");
+                }
+            }
+        }
+
+        private SlackPayload Payload(IMessage message)
+        {
+            return new SlackPayload
             {
                 WithMarkdown = true,
                 Attachments = new List<Attachment>
@@ -50,32 +84,6 @@ namespace FacadeNotifier.Core.Clients
                     }
                 }
             };
-
-            if (recipient.Groups.AnyOrNotNull())
-                await SendToSlack(recipient.Groups, payload, "#");
-
-            if (recipient.Users.AnyOrNotNull())
-                await SendToSlack(recipient.Users, payload, "@");
-        }
-
-        private async Task SendToSlack(string[] recipients, SlackPayload payload, string format)
-        {
-            foreach (var recipient in recipients)
-            {
-                payload.Channel = $"{format}{recipient}";
-
-                var serializedPayload = JsonConvert.SerializeObject(payload);
-
-                using (var httpClient = new HttpClient())
-                {
-                    var response = await httpClient.PostAsync(_webhookUrl,
-                        new StringContent(serializedPayload, Encoding.UTF8, "application/json"));
-
-                    if (response.IsSuccessStatusCode)
-                        _logger.Info($"SLACK | Message to {recipient} has been sent.");
-                    else _logger.Info($"SLACK | There were some errors while sending message to {recipient}.");
-                }
-            }
         }
     }
 }

@@ -52,17 +52,17 @@
                 {
                     case MessageType.Success:
                         {
-                            header = $"<strong>{message.Body} succeeded:</strong> {message.Title}";
+                            header = $"<strong>{message.Body} succeeded: {message.Title}</strong>";
                             body = $"Distribution: <a href='{message.Link.Url}'>{message.Link.Caption}</a>";
                         }; break;
                     case MessageType.Failed:
                         {
-                            header = $"<strong>{message.Body} failed:</strong> {message.Title}";
+                            header = $"<strong>{message.Body} failed: {message.Title}</strong>";
                             body = $"Log: <a href='{message.Link.Url}'>{message.Link.Caption}</a>";
                         }; break;
                     case MessageType.Cancelled:
                         {
-                            header = $"<strong>{message.Body} cancelled:</strong> {message.Title}";
+                            header = $"<strong>{message.Body} cancelled: {message.Title}</strong>";
                             body = $"Cancelled by: <a href='{message.Link.Url}'>{message.Link.Caption}</a>";
                         }; break;
                     default:
@@ -80,15 +80,15 @@
                 {
                     case MessageType.Success:
                         {
-                            header = $"<strong>{message.Body} succeeded:</strong> {message.Title}";
+                            header = $"<strong>{message.Body} succeeded: {message.Title}</strong>";
                         }; break;
                     case MessageType.Failed:
                         {
-                            header = $"<strong>{message.Body} failed:</strong> {message.Title}";
+                            header = $"<strong>{message.Body} failed: {message.Title}</strong>";
                         }; break;
                     case MessageType.Cancelled:
                         {
-                            header = $"<strong>{message.Body} cancelled:</strong> {message.Title}";
+                            header = $"<strong>{message.Body} cancelled: {message.Title}</strong>";
                         }; break;
                     default:
                         body = ""; break;

@@ -30,26 +30,21 @@ namespace FacadeNotifier.Core.Clients
             _messageToken = messageToken;
         }
 
-        public async Task SendNotificationAsync(IMessage message, IRecipient recipient)
+        public void SendNotification(IMessage message, IRecipient recipient)
         {
-            var payload = new HipChatPayload
-            {
-                Color = message.MessageType.ToHipChatColor(),
-                Message = PayloadContent.HipChatPayloadContent(message),
-                Notify = true,
-                MessageFormat = "html"
-            };
-
-            var serializedPayload = JsonConvert.SerializeObject(payload);
-
-            if (recipient.Groups.AnyOrNotNull())
-                await SendToHipChat(recipient.Groups, serializedPayload, _roomToken, "room", "notification");
-
-            if (recipient.Users.AnyOrNotNull())
-                await SendToHipChat(recipient.Users, serializedPayload, _messageToken, "user", "message");
+            throw new NotImplementedException("Use SendNotificationAsync method for sending notifications.");
         }
 
-        private async Task SendToHipChat(string[] recipients, string serializedPayload, string token, string container, string alert)
+        public async Task SendNotificationAsync(IMessage message, IRecipient recipient)
+        {
+            if (recipient.Groups.AnyOrNotNull())
+                await SendToHipChatAsync(recipient.Groups, SerializePayload(message), _roomToken, "room", "notification");
+
+            if (recipient.Users.AnyOrNotNull())
+                await SendToHipChatAsync(recipient.Users, SerializePayload(message), _messageToken, "user", "message");
+        }
+
+        private async Task SendToHipChatAsync(string[] recipients, string serializedPayload, string token, string container, string alert)
         {
             foreach (var recipient in recipients)
             {
@@ -68,6 +63,19 @@ namespace FacadeNotifier.Core.Clients
                     }
                 }
             }
+        }
+
+        private string SerializePayload(IMessage message)
+        {
+            var payload = new HipChatPayload
+            {
+                Color = message.MessageType.ToHipChatColor(),
+                Message = PayloadContent.HipChatPayloadContent(message),
+                Notify = true,
+                MessageFormat = "html"
+            };
+
+            return JsonConvert.SerializeObject(payload);
         }
     }
 }

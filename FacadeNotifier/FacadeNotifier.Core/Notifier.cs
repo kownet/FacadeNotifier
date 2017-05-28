@@ -5,6 +5,7 @@
     using NLog;
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public class Notifier : INotifier
     {
@@ -28,7 +29,16 @@
                 throw new ArgumentException("Message must have a title and body defined.");
 
             foreach (var client in _clients)
-                client.SendNotificationAsync(_message, _recipient);
+                client.SendNotification(_message, _recipient);
+        }
+
+        public async Task SendAsync()
+        {
+            if (string.IsNullOrWhiteSpace(_message.Title) || string.IsNullOrWhiteSpace(_message.Body))
+                throw new ArgumentException("Message must have a title and body defined.");
+
+            foreach (var client in _clients)
+                await client.SendNotificationAsync(_message, _recipient);
         }
 
         public INotifier ToPeople(params string[] toPeople)
