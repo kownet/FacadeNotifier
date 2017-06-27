@@ -53,6 +53,11 @@
     <Compile Include="APIs\HipChat\DTOs\HipChatRoomLink.cs" />
     <Compile Include="APIs\HipChat\DTOs\HipChatRoomResponse.cs" />
     <Compile Include="APIs\HipChat\HipChatApi.cs" />
+    <Compile Include="APIs\Slack\DTOs\SlackRoomItem.cs" />
+    <Compile Include="APIs\Slack\DTOs\SlackRoomPurpose.cs" />
+    <Compile Include="APIs\Slack\DTOs\SlackRoomResponse.cs" />
+    <Compile Include="APIs\Slack\DTOs\SlackRoomTopic.cs" />
+    <Compile Include="APIs\Slack\SlackApi.cs" />
     <Compile Include="Clients\HipChatClient.cs" />
     <Compile Include="Clients\IClient.cs" />
     <Compile Include="Clients\IHipChatClient.cs" />
@@ -76,6 +81,7 @@
     <Compile Include="Payloads\Slack\Field.cs" />
     <Compile Include="Payloads\Slack\SlackPayload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\NoticeCredentials.cs" />
     <Compile Include="Utils\PayloadContent.cs" />
   </ItemGroup>
   <ItemGroup>

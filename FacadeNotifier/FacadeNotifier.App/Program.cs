@@ -1,6 +1,7 @@
 ﻿namespace FacadeNotifier.App
 {
     using Core.Clients;
+    using FacadeNotifier.Core.Utils;
     using Main;
     using NLog;
     using System;
@@ -16,11 +17,11 @@
             var clients = new List<IClient>()
             {
                 new HipChatClient(
-                    new Uri("https://api.hipchat.com/v2/"),
-                    roomToken: "",
-                    messageToken: ""),
+                    new Uri(NoticeCredentials.HipChatApiEndpoint),
+                    roomToken: NoticeCredentials.HipChatRoomToken,
+                    messageToken: NoticeCredentials.HipChatMessageToken),
                 new SlackClient(
-                    new Uri(""))
+                    new Uri(NoticeCredentials.SlackHookEndpoint))
             };
 
             new Application().Run(clients);

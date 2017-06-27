@@ -1,29 +1,26 @@
-﻿namespace FacadeNotifier.Core.APIs.HipChat
+﻿namespace FacadeNotifier.Core.APIs.Slack
 {
-    using DTOs;
+    using FacadeNotifier.Core.APIs.Slack.DTOs;
     using FacadeNotifier.Core.Utils;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Threading.Tasks;
 
-    public class HipChatApi
+    public class SlackApi
     {
         private readonly Uri _webhookUrl;
 
-        public HipChatApi()
+        public SlackApi()
         {
-            _webhookUrl = new Uri(NoticeCredentials.HipChatApiEndpoint);
+            _webhookUrl = new Uri(NoticeCredentials.SlackApiEndpoint);
         }
 
-        public async Task<IEnumerable<HipChatRoomItem>> GetRooms()
+        public async Task<IEnumerable<SlackRoomItem>> GetRooms()
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Get, "room"))
+            using (var request = new HttpRequestMessage(HttpMethod.Post, $"channels.list?token={NoticeCredentials.SlackApiToken}"))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", NoticeCredentials.HipChatApiToken);
-
                 using (var httpClient = new HttpClient() { BaseAddress = _webhookUrl })
                 {
                     var response = await httpClient.SendAsync(request);
@@ -34,7 +31,7 @@
                         {
                             var json = await content.ReadAsStringAsync();
 
-                            return JsonConvert.DeserializeObject<HipChatRoomResponse>(json).Items;
+                            return JsonConvert.DeserializeObject<SlackRoomResponse>(json).Channels;
                         }
                     }
                     else

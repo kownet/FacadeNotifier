@@ -3,6 +3,7 @@
     using Core;
     using Core.APIs.HipChat;
     using Core.Content;
+    using FacadeNotifier.Core.APIs.Slack;
     using FacadeNotifier.Core.Clients;
     using System.Collections.Generic;
     using System.Linq;
@@ -20,16 +21,21 @@
                 "tk"
             };
 
-            var rooms = new HipChatApi().GetRooms().Result;
+            var hipchatRooms = new HipChatApi().GetRooms().Result;
+            var slackRooms = new SlackApi().GetRooms().Result;
 
-            var roomsToNotify = rooms.Select(r => r.Name);
+            var hipChatRoomsToNotify = hipchatRooms.Select(r => r.Name);
+
+            var slackRoomsToNotify = slackRooms.Select(r => r.Name);
+
+            var allRoomsToNotify = hipChatRoomsToNotify.Concat(slackRoomsToNotify);
 
             Task.WaitAll(
                 new Notifier(clients)
                             .WithTitle(message)
                             .WithBody("Build")
                             .ToPeople(peopleToNotify.ToArray())
-                            .ToGroups(roomsToNotify.ToArray())
+                            .ToGroups(allRoomsToNotify.ToArray())
                             .SetMessageType(MessageType.Success)
                             .WithLink(new ContentLink { Url = "https://kownet.info", Caption = "Kownet" })
                             .SendAsync());
