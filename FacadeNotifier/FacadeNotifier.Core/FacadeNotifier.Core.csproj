@@ -57,6 +57,9 @@
     <Compile Include="APIs\Slack\DTOs\SlackRoomPurpose.cs" />
     <Compile Include="APIs\Slack\DTOs\SlackRoomResponse.cs" />
     <Compile Include="APIs\Slack\DTOs\SlackRoomTopic.cs" />
+    <Compile Include="APIs\Slack\DTOs\SlackUserItem.cs" />
+    <Compile Include="APIs\Slack\DTOs\SlackUserProfile.cs" />
+    <Compile Include="APIs\Slack\DTOs\SlackUserResponse.cs" />
     <Compile Include="APIs\Slack\SlackApi.cs" />
     <Compile Include="Clients\HipChatClient.cs" />
     <Compile Include="Clients\IClient.cs" />

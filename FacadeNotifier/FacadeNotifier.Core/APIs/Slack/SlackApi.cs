@@ -39,5 +39,28 @@
                 }
             }
         }
+
+        public async Task<IEnumerable<SlackUserItem>> GetUsers()
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, $"users.list?token={NoticeCredentials.SlackApiToken}"))
+            {
+                using (var httpClient = new HttpClient() { BaseAddress = _webhookUrl })
+                {
+                    var response = await httpClient.SendAsync(request);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (var content = response.Content)
+                        {
+                            var json = await content.ReadAsStringAsync();
+
+                            return JsonConvert.DeserializeObject<SlackUserResponse>(json).Members;
+                        }
+                    }
+                    else
+                        return null;
+                }
+            }
+        }
     }
 }
